@@ -2,7 +2,12 @@ DROP TABLE IF EXISTS "bookmark_tags";
 DROP TABLE IF EXISTS "tag";
 DROP TABLE IF EXISTS "bookmark";
 DROP TABLE IF EXISTS "user";
+DROP TABLE IF EXISTS "folder";
 
+CREATE TABLE "folder"(
+  fr_foldername VARCHAR(20),
+  PRIMARY KEY (fr_foldername)
+);
 
 CREATE TABLE "user"(
   us_userid SERIAL PRIMARY KEY,
@@ -16,7 +21,7 @@ CREATE TABLE "bookmark"(
   bk_url VARCHAR(100) NOT NULL,
   bk_title VARCHAR(100) NOT NULL,
   bk_description TEXT DEFAULT '',
-  bk_folder VARCHAR(20) DEFAULT 'Main',
+  bk_foldername VARCHAR(20) REFERENCES "folder" (fr_folderName),
   bk_screenshot VARCHAR(100) DEFAULT 'http://placekitten.com/200/300',
   bk_bookmarkid SERIAL PRIMARY KEY,
   bk_userid INTEGER REFERENCES "user" (us_userid)
