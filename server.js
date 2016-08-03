@@ -18,12 +18,12 @@ app.get('/bookmarks', function (request, response) {
 
 function getBookmarks(folder, tag) {
   console.log('getbookmarks called with: ', folder, tag);
-  var query = 'SELECT bk_bookmarkid, bk_url, bk_title, bk_description, bk_foldername, bk_screenshot FROM bookmark';
+  var query = 'SELECT bookmarkid, url, title, description, foldername, screenshot FROM bookmark';
   if(folder) {
-    query = `SELECT bk_bookmarkid, bk_url, bk_title, bk_description, bk_foldername, bk_screenshot FROM bookmark JOIN folder ON bk_foldername = fr_foldername WHERE fr_foldername = 'Work';`
+    query = `SELECT bookmarkid, url, title, description, foldername, screenshot FROM bookmark JOIN folder ON foldername = foldername WHERE foldername = 'Work';`
   }
   if(tag) {
-    query = `SELECT bk_bookmarkid, bk_url, bk_title, bk_description, bk_foldername, bk_screenshot, tg_tag FROM bookmark JOIN bookmark_tags ON bk_bookmarkid = bt_bookmarkid JOIN tag ON bt_tagid = tg_tagid;`;
+    query = `SELECT bookmarkid, url, title, description, foldername, screenshot, tag FROM bookmark JOIN bookmark_tags ON bookmarkid = bookmarkid JOIN tag ON tagid = tagid;`;
   }
   console.log('query: ', query);
   
