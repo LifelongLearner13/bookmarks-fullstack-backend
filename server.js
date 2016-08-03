@@ -6,24 +6,66 @@ var app = express();
 
 var jsonParser = bodyParser.json();
 
+// https://stackoverflow.com/questions/18811286/nodejs-express-cache-and-304-status-code
+app.disable('etag');
+
+// Middleware suggested by 
+// https://stackoverflow.com/questions/18310394/no-access-control-allow-origin-node-apache-port-issue
+// Add headers
+app.use(function (req, res, next) {
+  // Website you wish to allow to connect
+  res.setHeader('Access-Control-Allow-Origin', '*');
+
+  // Request methods you wish to allow
+  res.setHeader('Access-Control-Allow-Methods', 'GET, PUT');
+
+  // Pass to next layer of middleware
+  next();
+});
+
 
 
 app.get('/bookmarks', function (request, response) {
   getBookmarks().then(function(result){
-    response.json(result);
+    response.json(result.rows);
   },function(err){
-    console.log(err);
+    response.json(err);
+  });
+});
+
+app.get('/bookmarks/:folderName', function(request, response) {
+  getBookmarks(request.params.folderName).then(function(result) {
+    response.json(result.rows);
+  },function(err){
+    response.json(err);
+  });
+});
+
+app.get('/folder/bookmarks/:folderName', function(request, response) {
+  getBookmarks(request.params.folderName).then(function(result) {
+    response.json(result.rows);
+  },function(err){
+    response.json(err);
+  });
+});
+
+app.get('/tag/bookmarks/:tagName', function(request, response) {
+  getBookmarks('', request.params.tagName).then(function(result) {
+    response.json(result.rows);
+  },function(err){
+    response.json(err);
   });
 });
 
 function getBookmarks(folder, tag) {
   console.log('getbookmarks called with: ', folder, tag);
-  var query = 'SELECT bookmarkid, url, title, description, foldername, screenshot FROM bookmark';
+  var query = `SELECT bookmarkid, url, title, description, foldername, screenshot 
+              FROM bookmark`;
   if(folder) {
-    query = `SELECT bookmarkid, url, title, description, foldername, screenshot FROM bookmark JOIN folder ON foldername = foldername WHERE foldername = 'Work';`
+    query = `SELECT bookmarkid, url, title, description, bookmark.foldername, screenshot FROM bookmark JOIN folder ON bookmark.foldername = folder.foldername WHERE folder.foldername = '${folder}';`;
   }
   if(tag) {
-    query = `SELECT bookmarkid, url, title, description, foldername, screenshot, tag FROM bookmark JOIN bookmark_tags ON bookmarkid = bookmarkid JOIN tag ON tagid = tagid;`;
+    query = `SELECT bookmark.bookmarkid, url, title, description, foldername, screenshot, tag FROM bookmark JOIN bookmark_tags ON bookmark.bookmarkid = bookmark_tags.bookmarkid JOIN tag ON bookmark_tags.tagid = tag.tagid;`;
   }
   console.log('query: ', query);
   
@@ -44,6 +86,7 @@ function getBookmarks(folder, tag) {
 
       // execute a query on our database
       client.query(query, function (err, result) {
+        console.log('query results: ', result);
         if (err) { 
           console.error(err); 
           response.send("Error " + err); 
@@ -58,7 +101,7 @@ function getBookmarks(folder, tag) {
           }
         });
 
-        resolve(result.rows);
+        resolve(result);
       });
     });
   });
