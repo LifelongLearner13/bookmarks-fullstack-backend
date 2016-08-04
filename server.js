@@ -12,7 +12,7 @@ app.disable('etag');
 app.use(function(req, res, next) {
   // @TODO: This approach is insecure change '*' to reflect front-end address
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Headers', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
   next();
 });
