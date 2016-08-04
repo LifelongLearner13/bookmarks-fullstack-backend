@@ -9,13 +9,6 @@ const connectURL = process.env.DATABASE_URL || 'postgres://localhost:5432/bookma
 var app = express();
 var jsonParser = bodyParser.json();
 app.disable('etag');
-// app.use(function(req, res, next) {
-//   // @TODO: This approach is insecure change '*' to reflect front-end address
-//   res.setHeader('Access-Control-Allow-Origin', '*');
-//   res.setHeader('Access-Control-Allow-Headers', '*');
-//   res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
-//   next();
-// });
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
