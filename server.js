@@ -1,25 +1,23 @@
+/* ---- Dependencies ---- */
 var pg = require('pg');
 var express = require('express');
 var bodyParser = require('body-parser');
 
-var connectURL = process.env.DATABASE_URL || 'postgres://localhost:5432/bookmarks';
+const connectURL = process.env.DATABASE_URL || 'postgres://localhost:5432/bookmarks';
+
+/* ---- Initial Setup ---- */
 var app = express();
-
 var jsonParser = bodyParser.json();
-
-// https://stackoverflow.com/questions/18811286/nodejs-express-cache-and-304-status-code
 app.disable('etag');
-
-// Middleware suggested by 
-// https://stackoverflow.com/questions/18310394/no-access-control-allow-origin-node-apache-port-issue
 app.use(function(req, res, next) {
+  // @TODO: This approach is insecure change '*' to reflect front-end address
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
   next();
 });
 
 
-
+/* */
 app.get('/bookmarks', function(request, response) {
   getBookmarks().then(function(result) {
     response.json(result.rows);
@@ -124,8 +122,8 @@ app.post('/bookmark', jsonParser, function(request, response) {
       ${request.body.screenshot ? ('\'' + request.body.screenshot + '\', ') : '' } 
       ${'1'}`;
 
-    var query = `INSERT INTO bookmark(url, title, description}, foldername, screenshot, userid)
-   VALUES (${infoToinsert})
+    var query = `INSERT INTO bookmark(url, title, ${request.body.description ? 'description,' : ''} foldername, ${request.body.screenshot ? 'screenshot,' : ''} userid)
+    VALUES (${infoToinsert})
     RETURNING bookmarkid, url, title, description, foldername, screenshot;`;
     console.log('query: ', query);
     var client = new pg.Client(connectURL);
@@ -143,7 +141,6 @@ app.post('/bookmark', jsonParser, function(request, response) {
           console.error(err);
           response.sendStatus('500');
         }
-
         response.json(result);
       });
     });
@@ -151,7 +148,7 @@ app.post('/bookmark', jsonParser, function(request, response) {
 });
 
 app.post('/folder', jsonParser, function(request, response) {
-
+  console.log('app.post:', request);
   if(!request.body.foldername) {
     response.status(422).json({
       message: 'Missing field: foldername'
