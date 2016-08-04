@@ -12,6 +12,7 @@ app.disable('etag');
 app.use(function(req, res, next) {
   // @TODO: This approach is insecure change '*' to reflect front-end address
   res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
   next();
 });
@@ -147,8 +148,8 @@ app.post('/bookmark', jsonParser, function(request, response) {
   }
 });
 
-app.post('/folder', function(request, response) {
-  console.log('app.post:', request);
+app.post('/folder', jsonParser, function(request, response) {
+  console.log('app.post:', request.body);
   if(!request.body.foldername) {
     response.status(422).json({
       message: 'Missing field: foldername'
