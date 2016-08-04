@@ -148,7 +148,7 @@ app.post('/bookmark', jsonParser, function(request, response) {
 });
 
 app.post('/folder', function(request, response) {
-  console.log('app.post:', request.body);
+  console.log('app.post:', request);
   if(!request.body.foldername) {
     response.status(422).json({
       message: 'Missing field: foldername'
