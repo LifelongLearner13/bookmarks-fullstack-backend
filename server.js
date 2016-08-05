@@ -16,7 +16,14 @@ app.use(function(req, res, next) {
 });
 
 
-/* */
+/**
+ *
+ *
+ * @param  {type} '/bookmarks'     description
+ * @param  {type} function(request description
+ * @param  {type} response         description
+ * @returns {type}                  description
+ */
 app.get('/bookmarks', function(request, response) {
   getBookmarks().then(function(result) {
     response.json(result.rows);
@@ -114,11 +121,11 @@ app.post('/bookmark', jsonParser, function(request, response) {
   } else if (!request.body.foldername) {
     response.status(422).json();
   } else {
-    var infoToinsert = `'${request.body.url}', 
-      '${request.body.title}', 
-      ${request.body.description ? ('\'' + request.body.description + '\', ') : ''} 
-      '${request.body.foldername}' , 
-      ${request.body.screenshot ? ('\'' + request.body.screenshot + '\', ') : '' } 
+    var infoToinsert = `'${request.body.url}',
+      '${request.body.title}',
+      ${request.body.description ? ('\'' + request.body.description + '\', ') : ''}
+      '${request.body.foldername}' ,
+      ${request.body.screenshot ? ('\'' + request.body.screenshot + '\', ') : '' }
       ${'1'}`;
 
     var query = `INSERT INTO bookmark(url, title, ${request.body.description ? 'description,' : ''} foldername, ${request.body.screenshot ? 'screenshot,' : ''} userid)
@@ -140,7 +147,7 @@ app.post('/bookmark', jsonParser, function(request, response) {
           console.error(err);
           response.sendStatus('500');
         }
-        response.json(result);
+        response.json(result.rows[0]);
       });
     });
   }
@@ -161,7 +168,7 @@ app.post('/folder', jsonParser, function(request, response) {
         response.sendStatus('500');
       }
 
-      var query = `INSERT INTO folder(foldername) 
+      var query = `INSERT INTO folder(foldername)
                     VALUES ('${request.body.foldername}')
                     RETURNING foldername`;
       console.log('query: ', query);
@@ -180,22 +187,22 @@ app.post('/folder', jsonParser, function(request, response) {
 });
 
 function getBookmarks(folder, tag) {
-  var query = `SELECT bookmarkid, url, title, description, foldername, screenshot 
+  var query = `SELECT bookmarkid, url, title, description, foldername, screenshot
               FROM bookmark`;
   if (folder) {
-    query = `SELECT bookmarkid, url, title, description, bookmark.foldername, screenshot 
-            FROM bookmark JOIN folder ON bookmark.foldername = folder.foldername 
+    query = `SELECT bookmarkid, url, title, description, bookmark.foldername, screenshot
+            FROM bookmark JOIN folder ON bookmark.foldername = folder.foldername
             WHERE folder.foldername = '${folder}';`;
   }
   if (tag) {
     // @todo: create an array of tags for each bookmark
     query = `SELECT bookmark.bookmarkid , url, title, description, foldername, screenshot, tag
-            FROM bookmark JOIN bookmark_tags ON bookmark.bookmarkid = bookmark_tags.bookmarkid 
-            JOIN tag ON bookmark_tags.tagid = tag.tagid 
-            WHERE bookmark.bookmarkid in ( 
-              SELECT bookmark.bookmarkid 
-                FROM bookmark JOIN bookmark_tags ON bookmark.bookmarkid = bookmark_tags.bookmarkid 
-                JOIN tag ON bookmark_tags.tagid = tag.tagid 
+            FROM bookmark JOIN bookmark_tags ON bookmark.bookmarkid = bookmark_tags.bookmarkid
+            JOIN tag ON bookmark_tags.tagid = tag.tagid
+            WHERE bookmark.bookmarkid in (
+              SELECT bookmark.bookmarkid
+                FROM bookmark JOIN bookmark_tags ON bookmark.bookmarkid = bookmark_tags.bookmarkid
+                JOIN tag ON bookmark_tags.tagid = tag.tagid
                 WHERE tag.tag = '${tag}');`;
   }
 
