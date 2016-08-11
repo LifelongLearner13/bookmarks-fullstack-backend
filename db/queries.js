@@ -1,16 +1,16 @@
 // Where the database is located
-const CONNECT_URL = process.env.DATABASE_URL || 'postgres://localhost:5432/bookmarks';
+var CONNECT_URL = process.env.DATABASE_URL || 'postgres://localhost:5432/bookmarks';
 
 /* ---- Postgres Queries Used by the API ---- */
-const SELECT_TAG = 'SELECT tag FROM tag;';
-const SELECT_FOLDER = 'SELECT foldername FROM folder;';
-const SELECT_BOOKMARK = 'SELECT bookmarkid, url, title, description, foldername, screenshot FROM bookmark;';
-const SELECT_BOOKMARK_BY_FOLDER = function(folder) {
+var SELECT_TAG = 'SELECT tag FROM tag;';
+var SELECT_FOLDER = 'SELECT foldername FROM folder;';
+var SELECT_BOOKMARK = 'SELECT bookmarkid, url, title, description, foldername, screenshot FROM bookmark;';
+var SELECT_BOOKMARK_BY_FOLDER = function(folder) {
     return `SELECT bookmarkid, url, title, description, bookmark.foldername, screenshot
               FROM bookmark JOIN folder ON bookmark.foldername = folder.foldername
               WHERE folder.foldername = '${folder}';`;
 };
-const SELECT_BOOKMARK_BY_TAG = function(tag) {
+var SELECT_BOOKMARK_BY_TAG = function(tag) {
   return `SELECT bookmark.bookmarkid , url, title, description, foldername, screenshot, tag
           FROM bookmark JOIN bookmark_tags ON bookmark.bookmarkid = bookmark_tags.bookmarkid
           JOIN tag ON bookmark_tags.tagid = tag.tagid
@@ -20,10 +20,10 @@ const SELECT_BOOKMARK_BY_TAG = function(tag) {
               JOIN tag ON bookmark_tags.tagid = tag.tagid
               WHERE tag.tag = '${tag}');`;
 };
-const INSERT_BOOKMARK = 'INSERT INTO bookmark(url, title, description, foldername, screenshot, userid) VALUES ($1, $2, $3, $4, $5, $6) RETURNING bookmarkid, url, title, description, foldername, screenshot;';
-const INSERT_FOLDER = 'INSERT INTO folder(foldername) VALUES ($1) RETURNING foldername;';
+var INSERT_BOOKMARK = 'INSERT INTO bookmark(url, title, description, foldername, screenshot, userid) VALUES ($1, $2, $3, $4, $5, $6) RETURNING bookmarkid, url, title, description, foldername, screenshot;';
+var INSERT_FOLDER = 'INSERT INTO folder(foldername) VALUES ($1) RETURNING foldername;';
 
-const DELETE_BOOKMARK = function(id) {
+var DELETE_BOOKMARK = function(id) {
   return `DELETE FROM bookmark WHERE bookmarkid = '${id}' RETURNING *;`;
 };
 

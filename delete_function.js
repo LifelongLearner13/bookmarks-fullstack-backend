@@ -1,10 +1,10 @@
 /* ---- Dependencies ---- */
-const pg = require('pg');
-const queries = require('./db/queries.js');
+var pg = require('pg');
+var queries = require('./db/queries.js');
 
 module.exports = function(bookmarkid, foldername) {
   console.log('inside delBookmarkFolder');
-  let query;
+  var query;
   if (bookmarkid) {
     query = queries.DELETE_BOOKMARK(bookmarkid);
   }
@@ -15,7 +15,7 @@ module.exports = function(bookmarkid, foldername) {
 
   console.log('CONNECT_URL: ', queries.CONNECT_URL);
   return new Promise(function(resolve, reject) {
-    const client = new pg.Client(queries.CONNECT_URL);
+    var client = new pg.Client(queries.CONNECT_URL);
     client.connect(function(err) {
       console.log('client connected');
       if (err) {
