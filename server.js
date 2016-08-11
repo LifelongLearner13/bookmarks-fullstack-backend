@@ -17,6 +17,7 @@ app.use(function(req, res, next) {
   next();
 });
 
+
 /* ---- GET REQUESTS ---- */
 /**
  * @description `GET /bookmarks` enpoint; returns an array of all the
