@@ -219,7 +219,16 @@ app.delete('/bookmark/:bookmarkid', function(request, response) {
   delBookmarkFolder(id, null).then(function(result) {
     response.json(result.rows);
   }, function(err) {
-    response.status('404').send('this didn\'t work').json(err);
+    response.status('404').json(err);
+  });
+});
+
+app.delete('/folder/:foldername', function(request, response) {
+  const folder = request.params.foldername;
+  delBookmarkFolder(null, folder).then(function(result) {
+    response.json(result.rows);
+  }, function(err) {
+    response.status('404').json(err);
   });
 });
 

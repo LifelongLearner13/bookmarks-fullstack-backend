@@ -27,6 +27,10 @@ var DELETE_BOOKMARK = function(id) {
   return `DELETE FROM bookmark WHERE bookmarkid = '${id}' RETURNING *;`;
 };
 
+var DELETE_FOLDER = function(folder) {
+  return `DELETE FROM folder WHERE foldername = '${folder}' RETURNING *;`;
+};
+
 exports.CONNECT_URL = CONNECT_URL;
 exports.SELECT_TAG = SELECT_TAG;
 exports.SELECT_FOLDER = SELECT_FOLDER;
@@ -36,3 +40,4 @@ exports.SELECT_BOOKMARK_BY_TAG = SELECT_BOOKMARK_BY_TAG;
 exports.INSERT_BOOKMARK = INSERT_BOOKMARK;
 exports.INSERT_FOLDER = INSERT_FOLDER;
 exports.DELETE_BOOKMARK = DELETE_BOOKMARK;
+exports.DELETE_FOLDER = DELETE_FOLDER;
