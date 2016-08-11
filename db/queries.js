@@ -23,6 +23,10 @@ const SELECT_BOOKMARK_BY_TAG = function(tag) {
 const INSERT_BOOKMARK = 'INSERT INTO bookmark(url, title, description, foldername, screenshot, userid) VALUES ($1, $2, $3, $4, $5, $6) RETURNING bookmarkid, url, title, description, foldername, screenshot;';
 const INSERT_FOLDER = 'INSERT INTO folder(foldername) VALUES ($1) RETURNING foldername;';
 
+const DELETE_BOOKMARK = function(id) {
+  return `DELETE FROM bookmark WHERE bookmarkid = '${id}' RETURNING *;`;
+};
+
 exports.CONNECT_URL = CONNECT_URL;
 exports.SELECT_TAG = SELECT_TAG;
 exports.SELECT_FOLDER = SELECT_FOLDER;
