@@ -4,6 +4,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var queries = require('./db/queries');
 var getBookmarks = require('./get_function');
+var delBookmarkFolder = require('./delete_function');
 
 /* ---- Initial Setup ---- */
 var app = express();
@@ -213,31 +214,12 @@ app.post('/folder', jsonParser, function(request, response) {
  * screenshot (optional). If insert into database is successful, then the
  * new bookmark is returned to the caller.
  */
-app.delete('/bookmark/:bookmarkid', jsonParser, function(request, response) {
+app.delete('/bookmark/:bookmarkid', function(request, response) {
   const id = request.params.bookmarkid;
-
-  var client = new pg.Client(queries.CONNECT_URL);
-  client.connect(function(err) {
-    if (err) {
-      console.error(err);
-      response.sendStatus('500');
-    }
-
-    // Paramitarize query to protect against SQL injection
-    client.query(queries.DELETE_BOOKMARK, [request.body.url, request.body.title, bdescription, request.body.foldername, bscreenshot, 1],
-      function(err, result) {
-        if (err) {
-          console.error(err);
-          response.sendStatus('500');
-        }
-        response.status(201).json(result.rows[0]);
-
-        // disconnect the client
-        client.end(function(err) {
-          if (err) throw err;
-        });
-      }
-    );
+  delBookmarkFolder(id, null).then(function(result) {
+    response.json(result.rows);
+  }, function(err) {
+    response.status('404').json(err);
   });
 });
 
