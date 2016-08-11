@@ -5,8 +5,8 @@ DROP TABLE IF EXISTS "user";
 DROP TABLE IF EXISTS "folder";
 
 CREATE TABLE "folder"(
-  foldername VARCHAR(20),
-  PRIMARY KEY (foldername)
+  folderid SERIAL PRIMARY KEY,
+  foldername VARCHAR(20) NOT NULL
 );
 
 CREATE TABLE "user"(
@@ -21,7 +21,7 @@ CREATE TABLE "bookmark"(
   url VARCHAR(100) NOT NULL,
   title VARCHAR(100) NOT NULL,
   description TEXT DEFAULT '',
-  foldername VARCHAR(20) REFERENCES "folder" (folderName),
+  folderid INTEGER REFERENCES "folder" (folderid),
   screenshot VARCHAR(100) DEFAULT 'http://placekitten.com/200/300',
   bookmarkid SERIAL PRIMARY KEY,
   userid INTEGER REFERENCES "user" (userid)
@@ -37,4 +37,3 @@ CREATE TABLE "bookmark_tags"(
   tagid INTEGER REFERENCES "tag" (tagid),
   PRIMARY KEY (bookmarkid, tagid)
 );
-

@@ -6,9 +6,9 @@ var SELECT_TAG = 'SELECT tag FROM tag;';
 var SELECT_FOLDER = 'SELECT foldername FROM folder;';
 var SELECT_BOOKMARK = 'SELECT bookmarkid, url, title, description, foldername, screenshot FROM bookmark;';
 var SELECT_BOOKMARK_BY_FOLDER = function(folder) {
-    return `SELECT bookmarkid, url, title, description, bookmark.foldername, screenshot
-              FROM bookmark JOIN folder ON bookmark.foldername = folder.foldername
-              WHERE folder.foldername = '${folder}';`;
+    return `SELECT bookmarkid, url, title, description, foldername, screenshot
+              FROM bookmark NATURAL JOIN folder
+              WHERE foldername = '${folder}';`;
 };
 var SELECT_BOOKMARK_BY_TAG = function(tag) {
   return `SELECT bookmark.bookmarkid , url, title, description, foldername, screenshot, tag
@@ -27,8 +27,8 @@ var DELETE_BOOKMARK = function(id) {
   return `DELETE FROM bookmark WHERE bookmarkid = '${id}' RETURNING *;`;
 };
 
-var DELETE_FOLDER = function(folder) {
-  return `DELETE FROM folder WHERE foldername = '${folder}' RETURNING *;`;
+var DELETE_FOLDER = function(folderid) {
+  return `DELETE FROM folder WHERE folderid = '${folderid}' RETURNING *;`;
 };
 
 exports.CONNECT_URL = CONNECT_URL;
