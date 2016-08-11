@@ -216,10 +216,11 @@ app.post('/folder', jsonParser, function(request, response) {
  */
 app.delete('/bookmark/:bookmarkid', function(request, response) {
   const id = request.params.bookmarkid;
+  console.log(id);
   delBookmarkFolder(id, null).then(function(result) {
     response.json(result.rows);
   }, function(err) {
-    response.status('404').json(err);
+    response.status('404').send('this didn\'t work').json(err);
   });
 });
 
