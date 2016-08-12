@@ -131,6 +131,7 @@ app.get('/folders', function(request, response) {
  * new bookmark is returned to the caller.
  */
 app.post('/bookmark', jsonParser, function(request, response) {
+  console.log(request.body);
   if (!request.body.url) {
     response.status(422).json({
       message: 'Missing field: URL'
