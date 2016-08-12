@@ -41,7 +41,7 @@ CREATE TABLE bookmark (
     url character varying(250) NOT NULL,
     title character varying(100) NOT NULL,
     description text DEFAULT ''::text,
-    foldername character varying(20),
+    folderid integer NOT NULL,
     screenshot character varying(250) DEFAULT 'http://placekitten.com/200/300'::character varying,
     bookmarkid integer NOT NULL,
     userid integer
@@ -82,7 +82,8 @@ CREATE TABLE bookmark_tags (
 --
 
 CREATE TABLE folder (
-    foldername character varying(20) NOT NULL
+    folderid integer NOT NULL,
+    foldername character varying(20) NOT NULL UNIQUE
 );
 
 
@@ -171,7 +172,7 @@ ALTER TABLE ONLY "user" ALTER COLUMN userid SET DEFAULT nextval('user_userid_seq
 -- Data for Name: bookmark; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY bookmark (url, title, description, foldername, screenshot, bookmarkid, userid) FROM stdin;
+COPY bookmark (url, title, description, folderid, screenshot, bookmarkid, userid) FROM stdin;
 \.
 
 
@@ -259,7 +260,7 @@ ALTER TABLE ONLY bookmark_tags
 --
 
 ALTER TABLE ONLY folder
-    ADD CONSTRAINT folder_pkey PRIMARY KEY (foldername);
+    ADD CONSTRAINT folder_pkey PRIMARY KEY (folderid);
 
 
 --
@@ -291,7 +292,7 @@ ALTER TABLE ONLY "user"
 --
 
 ALTER TABLE ONLY bookmark
-    ADD CONSTRAINT bookmark_foldername_fkey FOREIGN KEY (foldername) REFERENCES folder(foldername);
+    ADD CONSTRAINT bookmark_folderid_fkey FOREIGN KEY (folderid) REFERENCES folder(folderid);
 
 
 --
@@ -321,4 +322,3 @@ ALTER TABLE ONLY bookmark
 --
 -- PostgreSQL database dump complete
 --
-
