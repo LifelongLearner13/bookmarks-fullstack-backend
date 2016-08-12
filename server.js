@@ -139,7 +139,7 @@ app.post('/bookmark', jsonParser, function(request, response) {
     response.status(422).json({
       message: 'Incorrect field type: title'
     });
-  } else if (!request.body.foldername) {
+  } else if (!request.body.folderid) {
     response.status(422).json();
   } else {
     // Handle the two optional bookmark fields. If user did not provide a
@@ -155,9 +155,10 @@ app.post('/bookmark', jsonParser, function(request, response) {
       }
 
       // Paramitarize query to protect against SQL injection
-      client.query(queries.INSERT_BOOKMARK, [request.body.url, request.body.title, bdescription, request.body.foldername, bscreenshot, 1],
+      client.query(queries.INSERT_BOOKMARK, [request.body.url, request.body.title, bdescription, request.body.folderid, bscreenshot, 1],
         function(err, result) {
           if (err) {
+            console.log('inside query');
             console.error(err);
             response.sendStatus('500');
           }
