@@ -109,7 +109,7 @@ app.get('/folders', function(request, response) {
       // Convert the array of folder objects returned from database
       // into an array of Strings.
       var resultsToReturn = result.rows.map(function(value) {
-        return value.foldername;
+        return value;
       });
 
       response.json(resultsToReturn);
