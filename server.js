@@ -213,10 +213,10 @@ app.post('/folder', jsonParser, function(request, response) {
 /* ---- DELETE REQUESTS ---- */
 
 /**
- * @description `DELETE /bookmark` endpoint. Takes an object with the following
- * fields: url, title, description (optional), foldername,
- * screenshot (optional). If insert into database is successful, then the
- * new bookmark is returned to the caller.
+ * @description `DELETE /bookmark/:bookmarkid` endpoint.
+ * Takes :bookmarkid and queries the database to delete the matching bookmark
+ * If deleting from the database is successful, then the
+ * deleted bookmark is returned to the caller.
  */
 app.delete('/bookmark/:bookmarkid', function(request, response) {
   const id = request.params.bookmarkid;
@@ -227,8 +227,14 @@ app.delete('/bookmark/:bookmarkid', function(request, response) {
   });
 });
 
-app.delete('/folder/:foldername', function(request, response) {
-  const folder = request.params.foldername;
+/**
+ * @description `DELETE /folder/:folderid` endpoint.
+ * Takes :folderid and queries the database to delete the matching folder
+ * If deleting from the database is successful, then the
+ * deleted folder is returned to the caller.
+ */
+app.delete('/folder/:folderid', function(request, response) {
+  const folder = request.params.folderid;
   delBookmarkFolder(null, folder).then(function(result) {
     response.json(result.rows);
   }, function(err) {
