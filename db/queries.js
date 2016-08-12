@@ -20,7 +20,7 @@ var SELECT_BOOKMARK_BY_TAG = function(tag) {
               JOIN tag ON bookmark_tags.tagid = tag.tagid
               WHERE tag.tag = '${tag}');`;
 };
-var INSERT_BOOKMARK = 'INSERT INTO bookmark(url, title, description, foldername, screenshot, userid) VALUES ($1, $2, $3, $4, $5, $6) RETURNING bookmarkid, url, title, description, foldername, screenshot;';
+var INSERT_BOOKMARK = 'INSERT INTO bookmark(url, title, description, folderid, screenshot, userid) VALUES ($1, $2, $3, $4, $5, $6) RETURNING bookmarkid, url, title, description, foldername, screenshot;';
 var INSERT_FOLDER = 'INSERT INTO folder(foldername) VALUES ($1) RETURNING folderid, foldername;';
 
 var DELETE_BOOKMARK = function(id) {
