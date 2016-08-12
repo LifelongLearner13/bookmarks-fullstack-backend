@@ -6,7 +6,7 @@ DROP TABLE IF EXISTS "folder";
 
 CREATE TABLE "folder"(
   folderid SERIAL PRIMARY KEY,
-  foldername VARCHAR(20) NOT NULL
+  foldername VARCHAR(20) NOT NULL UNIQUE
 );
 
 CREATE TABLE "user"(
