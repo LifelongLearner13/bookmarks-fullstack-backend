@@ -2,14 +2,14 @@
 var pg = require('pg');
 var queries = require('./db/queries.js');
 
-module.exports = function(bookmarkid, foldername) {
-  console.log('inside delBookmarkFolder');
+module.exports = function(bookmarkid, folderid) {
+  console.log('inside delBookmarkFolder', bookmarkid);
   var query;
   if (bookmarkid) {
     query = queries.DELETE_BOOKMARK(bookmarkid);
   }
-  if (foldername) {
-    query = queries.DELETE_FOLDER(foldername);
+  if (folderid) {
+    query = queries.DELETE_FOLDER(folderid);
     // @TODO: create an array of tags for each bookmark
   }
 
