@@ -267,7 +267,6 @@ app.put('/bookmark/:bookmarkid', jsonParser, function (request, response) {
 
 app.put('/folder/:folderid', jsonParser, function (request, response) {
   const folderid = request.params.folderid;
-  console.log(request.body);
   if (!request.body.foldername) {
     response.status(422).json({
       message: 'Missing field: foldername'
