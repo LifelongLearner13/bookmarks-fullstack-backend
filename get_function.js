@@ -3,7 +3,6 @@ var pg = require('pg');
 var queries = require('./db/queries.js');
 
 module.exports = function(folder, tag) {
-  console.log('inside getBookmarks');
   var query = queries.SELECT_BOOKMARK;
   if (folder) {
     query = queries.SELECT_BOOKMARK_BY_FOLDER(folder);
@@ -17,7 +16,6 @@ module.exports = function(folder, tag) {
   return new Promise(function(resolve, reject) {
     var client = new pg.Client(queries.CONNECT_URL);
     client.connect(function(err) {
-      console.log('client connected');
       if (err) {
         console.error(err);
         response.sendStatus('500');

@@ -1,5 +1,5 @@
 // Where the database is located
-var CONNECT_URL = process.env.DATABASE_URL || 'postgres://localhost:5432/bookmarks';
+var CONNECT_URL = process.env.DATABASE_URL || global.databaseUrl || 'postgres://localhost:5432/bookmarks';
 
 /* ---- Postgres Queries Used by the API ---- */
 var SELECT_TAG = 'SELECT tag FROM tag;';

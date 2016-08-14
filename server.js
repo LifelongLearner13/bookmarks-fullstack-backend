@@ -95,7 +95,6 @@ app.get('/tags', function(request, response) {
 app.get('/folders', function(request, response) {
   var client = new pg.Client(queries.CONNECT_URL);
   client.connect(function(err) {
-    console.log('client connected');
     if (err) {
       console.error(err);
       response.sendStatus('500');
@@ -158,7 +157,6 @@ app.post('/bookmarks', jsonParser, function(request, response) {
       client.query(queries.INSERT_BOOKMARK, [request.body.url, request.body.title, bdescription, request.body.folderid, bscreenshot, 1],
         function(err, result) {
           if (err) {
-            console.log('inside query');
             console.error(err);
             response.sendStatus('500');
           }
@@ -186,7 +184,6 @@ app.post('/folders', jsonParser, function(request, response) {
   } else {
     var client = new pg.Client(queries.CONNECT_URL);
     client.connect(function(err) {
-      console.log('client connected');
       if (err) {
         console.error(err);
         response.sendStatus('500');
