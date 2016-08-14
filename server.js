@@ -130,7 +130,7 @@ app.get('/folders', function(request, response) {
  * screenshot (optional). If insert into database is successful, then the
  * new bookmark is returned to the caller.
  */
-app.post('/bookmark', jsonParser, function(request, response) {
+app.post('/bookmarks', jsonParser, function(request, response) {
   if (!request.body.url) {
     response.status(422).json({
       message: 'Missing field: URL'
@@ -178,7 +178,7 @@ app.post('/bookmark', jsonParser, function(request, response) {
  * field: foldername. If insert into database is successful, then the
  * new folder name is returned to the caller.
  */
-app.post('/folder', jsonParser, function(request, response) {
+app.post('/folders', jsonParser, function(request, response) {
   if (!request.body.foldername) {
     response.status(422).json({
       message: 'Missing field: foldername'
@@ -218,7 +218,7 @@ app.post('/folder', jsonParser, function(request, response) {
  * edited bookmark is returned to the caller.
  */
 
-app.put('/bookmark/:bookmarkid', jsonParser, function (request, response) {
+app.put('/bookmarks/:bookmarkid', jsonParser, function (request, response) {
   const bookmarkid = request.params.bookmarkid;
   if (!request.body.url) {
     response.status(422).json({
@@ -265,7 +265,7 @@ app.put('/bookmark/:bookmarkid', jsonParser, function (request, response) {
   * is successful, then the edited folder is returned to the caller.
   */
 
-app.put('/folder/:folderid', jsonParser, function (request, response) {
+app.put('/folders/:folderid', jsonParser, function (request, response) {
   const folderid = request.params.folderid;
   if (!request.body.foldername) {
     response.status(422).json({
@@ -303,7 +303,7 @@ app.put('/folder/:folderid', jsonParser, function (request, response) {
  * If deleting from the database is successful, then the
  * deleted bookmark is returned to the caller.
  */
-app.delete('/bookmark/:bookmarkid', function(request, response) {
+app.delete('/bookmarks/:bookmarkid', function(request, response) {
   const id = request.params.bookmarkid;
   delBookmarkFolder(id, null).then(function(result) {
     response.json(result.rows);
@@ -318,7 +318,7 @@ app.delete('/bookmark/:bookmarkid', function(request, response) {
  * If deleting from the database is successful, then the
  * deleted folder is returned to the caller.
  */
-app.delete('/folder/:folderid', function(request, response) {
+app.delete('/folders/:folderid', function(request, response) {
   const folder = request.params.folderid;
   delBookmarkFolder(null, folder).then(function(result) {
     response.json(result.rows);
@@ -333,3 +333,5 @@ app.set('port', (process.env.PORT || 5000));
 app.listen(app.get('port'), function() {
   console.log('Node app is running on port', app.get('port'));
 });
+
+module.exports = app;
