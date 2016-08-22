@@ -5,11 +5,10 @@ var CONNECT_URL = process.env.DATABASE_URL || 'postgres://localhost:5432/bookmar
 var SELECT_TAG = 'SELECT tag FROM tag;';
 var SELECT_FOLDER = 'SELECT folderid, foldername FROM folder;';
 var SELECT_BOOKMARK = 'SELECT bookmarkid, url, title, description, foldername, screenshot FROM bookmark NATURAL JOIN folder;';
-var SELECT_BOOKMARK_BY_FOLDER = function(folder) {
-  return `SELECT bookmarkid, url, title, description, foldername, screenshot
+var SELECT_BOOKMARK_BY_FOLDER = `SELECT bookmarkid, url, title, description, foldername, screenshot
           FROM bookmark NATURAL JOIN folder
-          WHERE foldername = '${folder}';`;
-};
+          WHERE foldername = :folder`;
+
 var SELECT_BOOKMARK_BY_TAG = function(tag) {
   return `SELECT bookmark.bookmarkid , url, title, description, foldername, screenshot, tag
           FROM bookmark JOIN bookmark_tags ON bookmark.bookmarkid = bookmark_tags.bookmarkid
@@ -22,21 +21,19 @@ var SELECT_BOOKMARK_BY_TAG = function(tag) {
 };
 var INSERT_BOOKMARK = `INSERT INTO bookmark(url, title, description, folderid, screenshot, userid)
                        VALUES ($1, $2, $3, $4, $5, $6) RETURNING bookmarkid, url, title, description, folderid, screenshot;`;
-var INSERT_FOLDER = 'INSERT INTO folder(foldername) VALUES ($1) RETURNING folderid, foldername;';
+var INSERT_FOLDER = 'INSERT INTO folder(foldername) VALUES (:fname) RETURNING folderid, foldername;';
 
 var DELETE_BOOKMARK = function(bookmarkid) {
   return `DELETE FROM bookmark WHERE bookmarkid = '${bookmarkid}' RETURNING *;`;
 };
 
-var DELETE_FOLDER = function(folderid) {
-  return `DELETE FROM folder WHERE folderid = '${folderid}' RETURNING *;`;
-};
+var DELETE_FOLDER = 'DELETE FROM folder WHERE folderid = :fid RETURNING *;';
 
 var UPDATE_BOOKMARK = `UPDATE bookmark SET (url, title, description, folderid, screenshot, userid) = ($1, $2, $3, $4, $5, $6)
                        WHERE bookmarkid = ($7)
                        RETURNING bookmarkid, url, title, description, folderid, screenshot;`;
 
-var UPDATE_FOLDER = 'UPDATE folder SET foldername = ($1) WHERE folderid = ($2) RETURNING folderid, foldername;';
+var UPDATE_FOLDER = 'UPDATE folder SET foldername = (:fname) WHERE folderid = (:fid) RETURNING folderid, foldername;';
 
 exports.CONNECT_URL = CONNECT_URL;
 exports.SELECT_TAG = SELECT_TAG;
