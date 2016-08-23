@@ -1,12 +1,10 @@
 /* ---- Dependencies ---- */
-var pg = require('pg');
 var express = require('express');
 var bodyParser = require('body-parser');
 var queries = require('./db/queries');
 var getBookmarks = require('./get_function');
 var delBookmarkFolder = require('./delete_function');
 var db      = require('./models');
-var folder = require('./routes/folder');
 
 /* ---- Initial Setup ---- */
 var app = express();
@@ -18,8 +16,6 @@ app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   next();
 });
-// app.use(app.router);
-// app.use('/folder', folder);
 
 
 // /* ---- GET REQUESTS ---- */
@@ -34,19 +30,23 @@ app.use(function(req, res, next) {
 //     response.status('404').json(err);
 //   });
 // });
-//
-// /**
-//  * @description `GET /folder/bookmark/:folderName` endpoint; returns an array of
-//  * bookmarks with the provided folder name.
-//  */
-// app.get('/folder/bookmarks/:folderName', function(request, response) {
-//   getBookmarks(request.params.folderName).then(function(result) {
-//     response.json(result.rows);
-//   }, function(err) {
-//     response.status('404').json(err);
-//   });
-// });
-//
+
+/**
+ * @description `GET /folder/bookmark/:foldername` endpoint; returns an array of
+ * bookmarks with the provided folder name.
+ */
+app.get('/folder/bookmarks/:foldername', function(request, response) {
+  db.sequelize.query(queries.SELECT_BOOKMARK_BY_FOLDER, {
+          replacements: {
+              folder: [request.params.foldername]
+          },
+            type: db.sequelize.QueryTypes.SELECT
+          })
+      .then(function(bookmarks) {
+          response.json(bookmarks);
+      });
+  });
+
 // /**
 //  * @description `GET /tag/bookmark/:tagName` endpoint; returns an array of
 //  * bookmarks with the provided tag name.
@@ -91,41 +91,21 @@ app.use(function(req, res, next) {
 //     });
 //   });
 // });
-//
-// /**
-//  * @description `GET /folders` endpoint; returns an array of
-//  * folders stored in the database.
-//  */
-// app.get('/folders', function(request, response) {
-//   var client = new pg.Client(queries.CONNECT_URL);
-//   client.connect(function(err) {
-//     console.log('client connected');
-//     if (err) {
-//       console.error(err);
-//       response.sendStatus('500');
-//     }
-//     client.query(queries.SELECT_FOLDER, function(err, result) {
-//       if (err) {
-//         console.error(err);
-//         response.sendStatus('500');
-//       }
-//
-//       // Convert the array of folder objects returned from database
-//       // into an array of Strings.
-//       var resultsToReturn = result.rows.map(function(value) {
-//         return value;
-//       });
-//
-//       response.json(resultsToReturn);
-//
-//       // disconnect the client
-//       client.end(function(err) {
-//         if (err) throw err;
-//       });
-//     });
-//   });
-// });
-//
+
+/**
+* @description `GET /folders` endpoint; returns an array of
+* folders stored in the database.
+*/
+app.get('/folders', function(request, response) {
+  db.sequelize.query(queries.SELECT_FOLDER, {type: db.sequelize.QueryTypes.SELECT}).then(function(folders) {
+    var resultsToReturn = folders.map(function(value) {
+      return value.foldername;
+    });
+
+    response.json(resultsToReturn);
+  });
+});
+
 // /* ---- POST REQUESTS ---- */
 //
 // /**
@@ -176,43 +156,29 @@ app.use(function(req, res, next) {
 //     });
 //   }
 // });
-//
-// /**
-//  * @description `POST /folder` endpoint. Takes an object with the following
-//  * field: foldername. If insert into database is successful, then the
-//  * new folder name is returned to the caller.
-//  */
-// app.post('/folder', jsonParser, function(request, response) {
-//   if (!request.body.foldername) {
-//     response.status(422).json({
-//       message: 'Missing field: foldername'
-//     });
-//   } else {
-//     var client = new pg.Client(queries.CONNECT_URL);
-//     client.connect(function(err) {
-//       console.log('client connected');
-//       if (err) {
-//         console.error(err);
-//         response.sendStatus('500');
-//       }
-//       // Paramitarize query to protect against SQL injection
-//       client.query(queries.INSERT_FOLDER, [request.body.foldername],
-//         function(err, result) {
-//           if (err) {
-//             console.error(err);
-//             response.sendStatus('500');
-//           }
-//           response.json(result.rows[0]);
-//
-//           // disconnect the client
-//           client.end(function(err) {
-//             if (err) throw err;
-//           });
-//         });
-//     });
-//   }
-// });
-//
+
+/**
+ * @description `POST /folder` endpoint. Takes an object with the following
+ * field: foldername. If insert into database is successful, then the
+ * new folder name is returned to the caller.
+ */
+app.post('/folder', jsonParser, function(request, response) {
+    if (!request.body.foldername) {
+        response.status(422).json({
+            message: 'Missing field: foldername'
+        });
+    } else {
+        db.sequelize.query(queries.INSERT_FOLDER, {
+            replacements: {
+                fname: request.body.foldername
+            },
+            type: db.sequelize.QueryTypes.INSERT
+        }).then(function(results) {
+            response.json(results[0]);
+        });
+    }
+});
+
 // /* ---- PUT REQUESTS ---- */
 //
 // /**
@@ -263,6 +229,24 @@ app.use(function(req, res, next) {
 //   });
 // });
 
+/**
+ * @description `PUT /folder/:folderid` endpoint. Takes an object with the following
+ * fields: folderid and new foldername. If update in the database
+ * is successful, then the edited folder is returned to the caller.
+ */
+app.put('/folder/:folderid', jsonParser, function(request, response) {
+   const folderid = request.params.folderid;
+   if (!request.body.foldername) {
+       response.status(422).json({
+           message: 'Missing field: foldername'
+       });
+   } else {
+     db.sequelize.query(queries.UPDATE_FOLDER, {replacements: {fid: folderid, fname: request.body.foldername}, type: db.sequelize.QueryTypes.UPDATE}).then(function(results) {
+       response.json(results[0]);
+     });
+   }
+});
+
 //
 // /* ---- DELETE REQUESTS ---- */
 //
@@ -282,72 +266,6 @@ app.use(function(req, res, next) {
 // });
 //
 
-
-/**
- * @description `GET /folder/bookmark/:foldername` endpoint; returns an array of
- * bookmarks with the provided folder name.
- */
-app.get('/folder/bookmarks/:foldername', function(request, response) {
-  db.sequelize.query(queries.SELECT_BOOKMARK_BY_FOLDER, {
-          replacements: {
-              folder: [request.params.foldername]
-          },
-            type: db.sequelize.QueryTypes.SELECT
-          })
-      .then(function(bookmarks) {
-          response.json(bookmarks);
-      });
-  });
-
-/**
-* @description `GET /folders` endpoint; returns an array of
-* folders stored in the database.
-*/
-app.get('/folders', function(request, response) {
-  db.sequelize.query(queries.SELECT_FOLDER, {type: db.sequelize.QueryTypes.SELECT}).then(function(folders) {
-    var resultsToReturn = folders.map(function(value) {
-      return value.foldername;
-    });
-
-    response.json(resultsToReturn);
-  });
-});
-
-/**
- * @description `POST /folder` endpoint. Takes an object with the following
- * field: foldername. If insert into database is successful, then the
- * new folder name is returned to the caller.
- */
-app.post('/folder', jsonParser, function(request, response) {
-    if (!request.body.foldername) {
-        response.status(422).json({
-            message: 'Missing field: foldername'
-        });
-    } else {
-      db.sequelize.query(queries.INSERT_FOLDER, {replacements: {fname: request.body.foldername}, type: db.sequelize.QueryTypes.INSERT}).then(function(results) {
-        response.json(results[0]);
-      });
-    }
-});
-
- /**
-  * @description `PUT /folder/:folderid` endpoint. Takes an object with the following
-  * fields: folderid and new foldername. If update in the database
-  * is successful, then the edited folder is returned to the caller.
-  */
-app.put('/folder/:folderid', jsonParser, function(request, response) {
-    const folderid = request.params.folderid;
-    if (!request.body.foldername) {
-        response.status(422).json({
-            message: 'Missing field: foldername'
-        });
-    } else {
-      db.sequelize.query(queries.UPDATE_FOLDER, {replacements: {fid: folderid, fname: request.body.foldername}, type: db.sequelize.QueryTypes.UPDATE}).then(function(results) {
-        response.json(results[0]);
-      });
-    }
-});
-
 /**
  * @description `DELETE /folder/:folderid` endpoint.
  * Takes :folderid and queries the database to delete the matching folder
@@ -356,8 +274,8 @@ app.put('/folder/:folderid', jsonParser, function(request, response) {
  */
 app.delete('/folder/:folderid', function(request, response) {
     const folder = request.params.folderid;
-    db.sequelize.query(queries.DELETE_FOLDER, {replacements: {fid: folder}}).then(function(results) {
-      response.json(results);
+    db.sequelize.query(queries.DELETE_FOLDER, {replacements: {fid: folder, type: db.sequelize.QueryTypes.DELETE}}).then(function(results) {
+      response.json(results[0]);
     });
 });
 
